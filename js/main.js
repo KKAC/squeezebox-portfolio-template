@@ -47,10 +47,11 @@ jQuery(document).ready(function(){
 	//select a single item - open item-content panel
 	$('.cd-items-wrapper').on('click', '.cd-slider a', function(event) {
 		event.preventDefault();
+		var mq = checkMQ();
 		var item_id = $(this).attr('data-action');
-		if( $(this).parent('li').next('li').is('.current') ) {
+		if( $(this).parent('li').next('li').is('.current') && mq === 'desktop') {
 			prevSides(itemsSlider);
-		} else if ( $(this).parent('li').prev('li').prev('li').prev('li').is('.current')) {
+		} else if ( $(this).parent('li').prev('li').prev('li').prev('li').is('.current') && mq === 'desktop') {
 			nextSides(itemsSlider);
 		} else {
 			$('.cd-item-content#'+item_id).addClass('is-visible');
