@@ -1,18 +1,16 @@
-jQuery(document).ready(function(){
-	var
-		itemsContainer = $('.cd-items-wrapper'),
-		itemsSlider = itemsContainer.children('.cd-slider'),
-		singleItemContent = $('.cd-item-content'),
-		sliderNav = $('.cd-slider-navigation');
+(function(window, document, $) {
+	var $itemsContainer = $('.cd-items-wrapper'),
+		$itemsSlider = $itemsContainer.children('.cd-slider'),
+		$singleItemContent = $('.cd-item-content'),
+		$sliderNav = $('.cd-slider-navigation');
 
 	var resizing = false;
-// 	console.log(itemsSlider;
 
 
-	//if on desktop - set a width for the itemsSlider element
+	//if on desktop - set a width for the $itemsSlider element
 	setSliderContainer();
 	$(window).on('resize', function(){
-		//on resize - update itemsSlider width and translate value
+		//on resize - update $itemsSlider width and translate value
 		if( !resizing ) {
 			(!window.requestAnimationFrame) ? setSliderContainer() : window.requestAnimationFrame(setSliderContainer);
 			resizing = true;
@@ -22,26 +20,31 @@ jQuery(document).ready(function(){
 	//show the items slider if user clicks the show-items button
 	$('.cd-intro-block').on('click', '.cd-content-wrapper>a', function(event) {
 		event.preventDefault();
-		var thisItemsContainer = $(this).parent().parent().next();
-		$(this).parent().parent().addClass('items-visible');
-		thisItemsContainer.addClass('items-visible');
+		var $introBlock = $(this).parent().parent();
+		var $thisItemsContainer = $introBlock.next();
+		$introBlock.addClass('items-visible');
+		$thisItemsContainer.addClass('items-visible');
 		//animate single item - entrance animation
 		setTimeout(function(){
-			showItemPreview(thisItemsContainer.children('.cd-slider').children('li').eq(0));
+			showItemPreview($thisItemsContainer.children('.cd-slider').children('li').eq(0));
 		}, 200);
 	});
 	//items slider is visible - hide slider and show the intro panel
 	$('.cd-intro-block').on('click', function(event) {
-		if( $(this).hasClass('items-visible') && !$(event.target).is('a[data-action="show-items"]') ) {
-			$(this).removeClass('items-visible');
-			$(this).next().removeClass('items-visible');
+		var $introSlider = $(this);
+		var $introPanel = $introSlider.next();
+		if( $introSlider.hasClass('items-visible') && !$(event.target).is('a[data-action="show-items"]') ) {
+			$introSlider.removeClass('items-visible');
+			$introPanel.removeClass('items-visible');
 		}
 	});
 	//close items slider with button (as well as intro panel)
 	$('.cd-items-wrapper>a').on('click',function(event){
-		if( $(this).parent().prev().hasClass('items-visible') && $(event.target).is('a[data-action="close-items"]') ) {
-			$(this).parent().prev().removeClass('items-visible');
-			$(this).parent().removeClass('items-visible');
+		var $introPanel = $(this).parent();
+		var $introSlider = $introPanel.prev();
+		if( $introSlider.hasClass('items-visible') && $(event.target).is('a[data-action="close-items"]') ) {
+			$introSlider.removeClass('items-visible');
+			$introPanel.removeClass('items-visible');
 		}
 	});
 	//select a single item - open item-content panel
@@ -50,48 +53,36 @@ jQuery(document).ready(function(){
 		var mq = checkMQ();
 		var item_id = $(this).attr('data-action');
 		if( $(this).parent('li').next('li').is('.current') && mq === 'desktop') {
-			prevSides(itemsSlider);
+			prevSides($itemsSlider);
 		} else if ( $(this).parent('li').prev('li').prev('li').prev('li').is('.current') && mq === 'desktop') {
-			nextSides(itemsSlider);
+			nextSides($itemsSlider);
 		} else {
 			$('.cd-item-content#'+item_id).addClass('is-visible');
 		}
 	});
 
 	//close single item content
-	singleItemContent.on('click', '.close', function(event){
+	$singleItemContent.on('click', '.close', function(event){
 		event.preventDefault();
-		singleItemContent.removeClass('is-visible');
+		$singleItemContent.removeClass('is-visible');
 	});
 
 	//go to next/pre slide - clicking on the next/prev arrow
-	sliderNav.on('click', '.next', function(){
+	$sliderNav.on('click', '.next', function(){
 		nextSides($('.cd-items-wrapper').children('.cd-slider'));
 	});
-	sliderNav.on('click','.prev',function(){
+	$sliderNav.on('click','.prev',function(){
 		prevSides($('.cd-items-wrapper').children('.cd-slider'));
 	});
-	//go to next/pre slide - keyboard navigation
-	//DEPRECATED FOR PRODUCTION
-	// $(document).keyup(function(event){
-	// 	var mq = checkMQ();
-	// 	if(event.which=='37' &&  intro.hasClass('items-visible') && !(sliderNav.find('.prev').hasClass('inactive')) && (mq == 'desktop') ) {
-	// 		prevSides(itemsSlider);
-	// 	} else if( event.which=='39' &&  intro.hasClass('items-visible') && !(sliderNav.find('.next').hasClass('inactive')) && (mq == 'desktop') ) {
-	// 		nextSides(itemsSlider);
-	// 	} else if(event.which=='27' && singleItemContent.hasClass('is-visible')) {
-	// 		singleItemContent.removeClass('is-visible');
-	// 	}
-	// });
 
-	itemsSlider.on('swipeleft', function(){
+	$itemsSlider.on('swipeleft', function(){
 		var mq = checkMQ();
-		if( !(sliderNav.find('.next').hasClass('inactive')) && (mq == 'desktop') ) nextSides(itemsSlider);
+		if( !($sliderNav.find('.next').hasClass('inactive')) && (mq == 'desktop') ) nextSides($itemsSlider);
 	});
 
-	itemsSlider.on('swiperight', function(){
+	$itemsSlider.on('swiperight', function(){
 		var mq = checkMQ();
-		if ( !(sliderNav.find('.prev').hasClass('inactive')) && (mq == 'desktop') ) prevSides(itemsSlider);
+		if ( !($sliderNav.find('.prev').hasClass('inactive')) && (mq == 'desktop') ) prevSides($itemsSlider);
 	});
 
 	function showItemPreview(item) {
@@ -111,16 +102,16 @@ jQuery(document).ready(function(){
 	function setSliderContainer() {
 		var mq = checkMQ();
 		if(mq == 'desktop') {
-			var	slides = itemsSlider.children('li'),
+			var	slides = $itemsSlider.children('li'),
 				slideWidth = slides.eq(0).width(),
-				marginLeft = Number(itemsSlider.children('li').eq(1).css('margin-left').replace('px', '')),
+				marginLeft = Number($itemsSlider.children('li').eq(1).css('margin-left').replace('px', '')),
 				sliderWidth = ( slideWidth + marginLeft )*( slides.length + 1 ) + 'px',
-				slideCurrentIndex = itemsSlider.children('li.current').index();
-			itemsSlider.css('width', sliderWidth);
-			( slideCurrentIndex != 0 ) && setTranslateValue(itemsSlider, (  slideCurrentIndex * (slideWidth + marginLeft) + 'px'));
+				slideCurrentIndex = $itemsSlider.children('li.current').index();
+			$itemsSlider.css('width', sliderWidth);
+			( slideCurrentIndex != 0 ) && setTranslateValue($itemsSlider, (  slideCurrentIndex * (slideWidth + marginLeft) + 'px'));
 		} else {
-			itemsSlider.css('width', '');
-			setTranslateValue(itemsSlider, 0);
+			$itemsSlider.css('width', '');
+			setTranslateValue($itemsSlider, 0);
 		}
 		resizing = false;
 	}
@@ -191,9 +182,9 @@ jQuery(document).ready(function(){
 
 	function updateNavigation() {
 		//update visibility of next/prev buttons according to the visible slides
-		var current = itemsContainer.find('li.current');
-		(current.is(':first-child')) ? sliderNav.find('.prev').addClass('inactive') : sliderNav.find('.prev').removeClass('inactive');
-		(current.nextAll('li').length < 3 ) ? sliderNav.find('.next').addClass('inactive') : sliderNav.find('.next').removeClass('inactive');
+		var current = $itemsContainer.find('li.current');
+		(current.is(':first-child')) ? $sliderNav.find('.prev').addClass('inactive') : $sliderNav.find('.prev').removeClass('inactive');
+		(current.nextAll('li').length < 3 ) ? $sliderNav.find('.next').addClass('inactive') : $sliderNav.find('.next').removeClass('inactive');
 	}
 
 	function setTranslateValue(item, translate) {
@@ -205,6 +196,5 @@ jQuery(document).ready(function(){
 			'transform': 'translateX(-' + translate + ')',
 		});
 	}
-
-
-});
+	
+}(window, document, window.jQuery));
